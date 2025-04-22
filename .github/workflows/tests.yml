@@ -1,0 +1,70 @@
+name: Run Pytest
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: partsdb
+          POSTGRES_USER: partsuser
+          POSTGRES_PASSWORD: partspass
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U partsuser -d partsdb"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    env:
+      PYTHONPATH: src
+      POSTGRES_DB: partsdb
+      POSTGRES_USER: partsuser
+      POSTGRES_PASSWORD: partspass
+      POSTGRES_HOST: localhost
+      POSTGRES_PORT: 5432
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements/base.txt
+
+      - name: Wait for Postgres to be ready
+        run: |
+          for i in {1..15}; do
+            pg_isready -h localhost -U partsuser && break
+            echo "Waiting for postgres..."
+            sleep 2
+          done
+
+      - name: Run migrations
+        run: |
+          python manage.py migrate
+
+      - name: Run tests with coverage
+        run: |
+          pytest --cov=src/parts --cov-report=term-missing
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-file
+          path: .coverage

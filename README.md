@@ -1,3 +1,5 @@
+![Tests](https://github.com/ricardocanela/qventus-parts/actions/workflows/tests.yml/badge.svg)
+
 # ⚙️ Parts API
 
 A fully Dockerized Django RESTful API for managing parts inventory and analyzing the most common words used in part descriptions.
