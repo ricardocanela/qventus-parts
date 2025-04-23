@@ -9,7 +9,8 @@ services:
     volumes:
       - .:/app
     environment:
-      - PYTHONPATH=/app/src
+      PYTHONPATH: /app/src
+      POSTGRES_HOST: db
     depends_on:
       - db
 
