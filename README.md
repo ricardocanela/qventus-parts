@@ -1,31 +1,33 @@
-![Tests](https://github.com/ricardocanela/qventus-parts/actions/workflows/tests.yml/badge.svg)
+![CI](https://github.com/ricardocanela/qventus-parts/actions/workflows/tests.yml/badge.svg)
 
 # ⚙️ Parts API
 
-A fully Dockerized Django RESTful API for managing parts inventory and analyzing the most common words used in part descriptions.
+A fully Dockerized Django RESTful API for managing a parts inventory and analyzing the most common words used in part descriptions.
+
+> 🧪 This project uses **GitHub Actions** to automatically run tests on every push and pull request to the `main` branch.
 
 ---
 
 ## 📦 Features
 
-- ✅ Full CRUD for `Part` model  
-- 📊 Analytics endpoint: retrieves the top 5 most common words from all part descriptions  
-- 🧪 Automated testing using `pytest` and `pytest-django`  
-- 🐳 Docker & Docker Compose for easy setup  
+- ✅ Full CRUD for the `Part` model  
+- 📊 Analytics endpoint: retrieves the top 5 most common words across all part descriptions  
+- 🧪 Automated tests with `pytest` and `pytest-django`  
+- 🐳 Docker & Docker Compose for simplified local setup  
 
 ---
 
 ## 🚀 Getting Started
 
-### 🐳 Run with Docker
+### 🐳 Run with Docker and docker-compose
 
 ```bash
-git clone <your-repo-url>
-cd parts_api
+git clone <this-repo-url>
+cd qventus-parts
 docker-compose up --build
 ```
 
-The API will be available at: [http://localhost:8000/api/](http://localhost:8000/api/)
+Once started, the API will be available at: [http://localhost:8000/api/](http://localhost:8000/api/)
 
 ---
 
@@ -66,18 +68,18 @@ The API will be available at: [http://localhost:8000/api/](http://localhost:8000
 
 ---
 
-### 🔹 Top 5 Most Common Words  
+### 🔹 Get Top 5 Most Common Words  
 `GET /api/common-words/`
 
 **Example Response:**
 
 ```json
 {
-  "testing": 2,
-  "part": 2,
-  "for": 2,
-  "used": 1,
-  "only": 1
+  "motor": 3,
+  "high": 2,
+  "performance": 2,
+  "aircraft": 2,
+  "light": 1
 }
 ```
 
@@ -85,52 +87,57 @@ The API will be available at: [http://localhost:8000/api/](http://localhost:8000
 
 ## 🧪 Running Tests
 
+Run tests inside the container:
+
 ```bash
 docker-compose exec web pytest --cov
 ```
 
-**Tests cover:**
+**Test coverage includes:**
 
-- All CRUD operations  
+- CRUD operations  
 - Validation checks  
-- Analytics endpoint  
+- Analytics endpoint (`/api/common-words/`)  
 - Model string representation  
+
+> Tests are powered by `pytest` + `pytest-django`, with database fixtures and test isolation.
 
 ---
 
 ## 🛠️ Database Configuration
 
-PostgreSQL is used by default (via Docker).  
-If needed, switch to SQLite by editing `src/parts_api/settings/base.py`:
-
-```python
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
-```
+The project uses **PostgreSQL by default**, managed through Docker Compose.  
 
 ---
 
-## ⚙️ Environment Variables
+### 🧪 Sample Data Seeding
 
-Example `.env` file:
+When you run the project with Docker, the application automatically checks if the `parts` table is empty and inserts **sample data** if needed.
 
-```env
-export PYTHONPATH=src
-```
+This ensures the API has meaningful data available for testing and exploration right after startup.
 
----
+No manual steps required.
+
+> ✅ The seed script is executed via `python manage.py shell < src/seed_data.py` during container initialization (see `entrypoint.sh`).
+
+The inserted sample records are:
+
+| Name           | SKU             | Description                                 | Weight (oz) | Active |
+|----------------|------------------|---------------------------------------------|-------------|--------|
+| Heavy coil     | SDJDDH8223DHJ    | Tightly wound nickel-gravy alloy spring     | 22          | ✅     |
+| Reverse lever  | DCMM39823DSJD    | Attached to provide inverse leverage        | 9           | ❌     |
+| Macrochip      | OWDD823011DJSD   | Used for heavy-load computing               | 2           | ✅     |
+
+
+
 
 ## 📈 Future Improvements
 
-- 🔐 Authentication and permission controls (e.g., JWT)  
-- 🔎 Filtering, search, and ordering on part listing  
+- 🔐 JWT Authentication and permission controls  
+- 🔎 Filtering, search, and ordering on part listings  
 - 📑 Pagination support  
-- 📊 Admin dashboard for metrics  
-- 🧾 Swagger or ReDoc integration for auto-documentation  
+- 📊 Admin dashboard for analytics  
+- 🧾 API documentation via Swagger or ReDoc  
 
 ---
 
@@ -145,3 +152,4 @@ Backend Engineer · Python · Django · REST APIs · Docker
 ## 📄 License
 
 MIT License © 2025 Ricardo Canela
+

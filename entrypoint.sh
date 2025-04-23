@@ -1,12 +1,13 @@
 #!/bin/sh
 
-echo "Aguardando banco de dados ficar pronto..."
-
-# Espera o banco subir
+echo "Waiting for the database to be ready..."
 sleep 3
 
-echo "Aplicando migrações..."
+echo "Applying migrations..."
 python manage.py migrate
 
-echo "Iniciando o servidor..."
+echo "Seeding sample data..."
+python manage.py shell < src/seed_data.py
+
+echo "Starting the server..."
 python manage.py runserver 0.0.0.0:8000
